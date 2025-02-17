@@ -16,7 +16,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from parking import views  # Assure-toi que l'import vient de l'app 'parking'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('places/', views.list_places, name='list_places'),
+    path('ticket/<int:place_id>/', views.get_ticket, name='get_ticket'),
+    path('release/<int:ticket_id>/', views.release_place, name='release_place'),
+    
+    
+    path('', views.list_places, name='home'),  
 ]
