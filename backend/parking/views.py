@@ -2,11 +2,13 @@ from django.shortcuts import render, redirect
 from .models import Place, Ticket
 from django.http import HttpResponse
 from django.utils import timezone
+from django.http import JsonResponse
 
 
 def list_places(request):
     places = Place.objects.all()
-    return render(request, 'parking/places_list.html', {'places': places})
+    places = Place.objects.all().values('id', 'is_occupied') 
+    return JsonResponse(list(places), safe=False)
 
 
 def get_ticket(request, place_id):
