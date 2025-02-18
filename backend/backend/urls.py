@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from parking import views  # Assure-toi que l'import vient de l'app 'parking'
+from parking import views  
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,5 +25,5 @@ urlpatterns = [
     path('release/<int:ticket_id>/', views.release_place, name='release_place'),
     
     
-    path('', views.list_places, name='home'),  
+    path('', views.home, name='home'),  
 ]
