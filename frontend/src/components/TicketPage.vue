@@ -14,7 +14,7 @@ const ticket = ref(null)
 
 const fetchPlaces = async () => {
     try {
-        const response = await axios.get('http://127.0.0.1:8000/')
+        const response = await axios.get('https://parking-app-v9k6.onrender.com/')
         places.value = response.data
     } catch (error) {
         console.error('Erreur lors du chargement des places:', error)

@@ -8,7 +8,7 @@ const router = useRouter()
 
 const fetchPlaces = async () => {
     try {
-        const response = await axios.get('http://127.0.0.1:8000/')
+        const response = await axios.get('https://parking-app-v9k6.onrender.com/')
         places.value = response.data
     } catch (error) {
         console.error('Erreur lors du chargement des places:', error)
@@ -16,7 +16,7 @@ const fetchPlaces = async () => {
 }
 const PlaceAsOccupied = async (placeId) => {
     try {
-        await axios.patch(`http://127.0.0.1:8000/${placeId }/`, {
+        await axios.patch(`https://parking-app-v9k6.onrender.com/${placeId }/`, {
             is_occupied: true
         })
         fetchPlaces()
