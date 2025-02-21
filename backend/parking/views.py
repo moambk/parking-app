@@ -1,8 +1,12 @@
-from django.shortcuts import render, redirect
-from .models import Place, Ticket
-from django.http import HttpResponse
-from django.utils import timezone
+from .models import Place
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+from rest_framework import status
+import json
+
 
 
 def list_places(request):
@@ -11,27 +15,32 @@ def list_places(request):
     return JsonResponse(list(places), safe=False)
 
 
-def get_ticket(request, place_id):
-    place = Place.objects.get(id=place_id)
-    if not place.is_occupied:
-
-
-        ticket = Ticket(place=place)
-        ticket.save()
-        place.is_occupied = True
+@api_view(['POST', 'PUT', 'PATCH'])
+def update_place(request, place_id):
+    place = get_object_or_404(Place, id=place_id)
+    if request.method == "PATCH":
+        data = json.loads(request.body)
+        place.is_occupied = data.get("is_occupied", place.is_occupied)
         place.save()
-        return HttpResponse(f"Ticket créé pour la place {place.number}.")
-    return HttpResponse("Cette place est déjà occupée.")
+        return JsonResponse({"message": "Place mise à jour avec succès", "is_occupied": place.is_occupied})
+    return JsonResponse({"error": "Méthode non autorisée"}, status=405)
 
 
-def release_place(request, ticket_id):
-    ticket = Ticket.objects.get(id=ticket_id)
-    place = ticket.place
-    ticket.exit_time = timezone.now()
-    ticket.save()
-    place.is_occupied = False
-    place.save()
-    return HttpResponse(f"La place {place.number} a été libérée.")
 
-def home():
-    return render('parking/home.html')
+
+class TicketPurchaseView(APIView):
+    def post(self, request, place_id):
+        try:
+
+            place = Place.objects.get(id=place_id)
+            
+
+            if place.is_occupied:
+                return Response({"detail": "La place est déjà occupée."}, status=status.HTTP_400_BAD_REQUEST)
+            
+            place.is_occupied = True
+            place.save()
+
+            return Response({"detail": "Ticket acheté avec succès !"}, status=status.HTTP_200_OK)
+        except Place.DoesNotExist:
+            return Response({"detail": "Place non trouvée."}, status=status.HTTP_404_NOT_FOUND)
